@@ -75,6 +75,16 @@ declare namespace localNotifications {
          */
         ongoing?: boolean;
 
+        /**
+         * Set the progress when this is "ongoing" notification.
+         * Ongoing notifications cannot be dismissed by the user,
+         * your application or must take care of canceling them.
+         *
+         * Android only.
+         * Default 0.
+         */
+        progress?: number;
+
         /***
          * An array of messages to be displayed as a single notification using the inbox style
          * Note: the length of the array cannot be greater than five, in a situation where it
@@ -115,6 +125,13 @@ declare namespace localNotifications {
          * or you can manually invoke `requestPermission` if that's your thing.
          */
         schedule(options: ScheduleOptions[]): Promise<any>;
+
+        /**
+         * Update progress of ongoing notification.
+         * if progress value is greater than or equal to 100
+         * then notification will be finished automatically and onGoing will be set to false.
+         */
+        updateProgress(builder:any,progressValue:number,body?:string): Promise<any>;
 
         /**
          * Tapping a notification in the notification center will launch your app.

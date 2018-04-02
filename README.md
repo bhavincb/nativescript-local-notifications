@@ -64,6 +64,7 @@ You can pass several options to this function, everything is optional:
 |`smallIcon` |On Android you can set a custom icon in the system tray. Pass in 'res://filename' (without the extension) which lives in App_Resouces/Android/drawable folders. If not passed, we look for a file named 'ic_stat_notify.png' in the App_Resources/Android/drawable folders. Default: the app icon.|
 |`largeIcon` |Same as `smallIcon`, but this one is shown when you expand the notification center. The optional file we look for is not 'ic_stat_notify.png' but 'ic_notify.png'.|
 |`ongoing` |Default is (`false`). Set whether this is an `ongoing` notification. Ongoing notifications cannot be dismissed by the user, so your application must take care of canceling them.(**Android Only**) |
+|`progress` |Default is (`0`). Set the progress when this is "ongoing" notification.(**Android Only**) |
 
 Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fall back to the default (app icon). This is a known issue and can be fixed in a future version.
 
@@ -78,13 +79,14 @@ Note that after a reboot the `smallIcon` and `largeIcon` are not restored but fa
     groupedMessages:["The first", "Second", "Keep going", "one more..", "OK Stop"], //android only
     groupSummary:"Summary of the grouped messages above", //android only
     ongoing: true, // makes the notification ongoing (Android only)
+    progress:10, // sets the progress of ongoing notification (Android only)
     smallIcon: 'res://heart',
     interval: 'minute',
     sound: "customsound-ios.wav", // falls back to the default sound on Android
     at: new Date(new Date().getTime() + (10 * 1000)) // 10 seconds from now
   }]).then(
-      function() {
-        console.log("Notification scheduled");
+      function(builder) {
+        console.log("Notification scheduled",builder);
       },
       function(error) {
         console.log("scheduling error: " + error);
@@ -116,6 +118,22 @@ __Don't include xxxhdpi__
 
 > __xxxhdpi__: Extra-extra-extra-high-density uses (__launcher icon only__, see the note in Supporting Multiple Screens); approximately 640dpi. Added in API Level 18  
 > Source: [Density Qualifier Docs](https://developer.android.com/guide/topics/resources/providing-resources.html#DensityQualifier)
+
+###updateProgress(Android only)
+
+Update progress of ongoing notification.
+if progress value is greater than or equal to 100 then notification will be finished automatically and onGoing property for notification will be set to false.
+
+Use this function to have a callback invoked when a notification is updated to its new progress value.
+Note that it is android only. for ios it will not work.
+
+```js
+  LocalNotifications.addOnMessageReceivedCallback(builder,50,"uploading file").then(
+      function() {
+        console.log("notification updated");
+      }
+  )
+```
 
 ### addOnMessageReceivedCallback
 Tapping a notification in the notification center will launch your app.

@@ -98,7 +98,10 @@ LocalNotifications.schedule = function (arg) {
             .setNumber(options.badge)
             .setOngoing(options.ongoing)
             .setTicker(options.ticker || options.body);
-
+        
+        if(options.progress!=null&&options.progress!=undefined){
+          builder.setProgress(100, options.progress, indeterminate);
+        }
         if (android.os.Build.VERSION.SDK_INT >= 26) {
           var channelId = "myChannelId"; // package scoped, so no need to add it ourselves
           var notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
@@ -177,13 +180,37 @@ LocalNotifications.schedule = function (arg) {
         LocalNotifications._persist(options);
       }
 
-      resolve();
+      resolve(builder);
     } catch (ex) {
       console.log("Error in LocalNotifications.schedule: " + ex);
       reject(ex);
     }
   });
 };
+
+LocalNotifications.updateProgress = function (builder,value,body=null){
+  return new Promise(function (resolve, reject) {
+    try {
+      if(body!=null){
+        builder.setContentText(body);
+      }
+      if(value>=100){
+        builder
+          .setProgress(100, 100, false)
+          .setOngoing(false);
+      }else{
+        builder.setProgress(100,value,indeterminate);
+      }
+      var notiManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+      notiManager.notify(options.id, builder.build());    
+      resolve(true); 
+    } catch (ex) {
+      console.log("Error in LocalNotifications.updateProgress: " + ex);
+      reject(ex);
+    }
+  });
+  
+}
 
 LocalNotifications._getInterval = function (interval) {
   if (interval === null || interval === "") {
